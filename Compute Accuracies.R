@@ -15,33 +15,7 @@ library(RODBC)
 library(doParallel)
 library(strucchange)
 ### ODBC Connection
-dsn <- "DRIVER={SQL Server};
-UID=sa;
-pwd=ca!g736k;
-DATABASE=United;
-SERVER=104.130.31.161;"
-channel <- odbcDriverConnect(connection = dsn)
-
-##Read master tables:
-## master_cc: list of cat-classes
-## master_loc: list of all locations
-## master_calendar: fiscal calendar
-master_cc = data.table(sqlQuery(channel,"select CatClassID, CatClass, CatClassGroup, CatClassDesc, AvgOEC from MASTER_CatClass"))
-SupChainCC=data.table(read.csv('SupplyChainCatClasses.csv'))
-master_cc=merge(master_cc,SupChainCC[,.(CatClass=Cat.Class,Supply.Chain)],by='CatClass')
-master_cc[,CatClassGroup:=Supply.Chain]
-
-master_loc=data.table(read.csv('Master Location 061518.csv',header=TRUE))
-master_loc=master_loc[,.(Location=Location_Code,LocationID=Location_Code,MetroID=METRO,DistrictID=paste0("R",REGION,"D",DISTRICT),RegionID=REGION,
-                         MetroName=METRO_DESCRIPTION,DistrictName=DISTRICT_DESC,RegionName=REGION_DESC)]
-
-master_calendar = data.table(sqlQuery(channel,"select distinct fiscal_month as Month, fiscal_year as Year from MASTER_Calendar"))
-master_calendar[,MonthStartDate:=as.Date(paste0(Year,"-",Month,"-01"))]
-
-master_calendar_day = data.table(sqlQuery(channel,"select distinct date as DayDate, fiscal_week_date as WeekStartDate, fiscal_week as Week, fiscal_month as Month, fiscal_year as Year from MASTER_Calendar"))
-master_calendar_day[,WeekStartDate:= as.Date(WeekStartDate)]
-master_calendar_day[,DayDate:= as.Date(DayDate)]
-
+load('Master Tables.Rda')
 
 # subset to front range district
 loc600=master_loc[DistrictID=='R6D16']

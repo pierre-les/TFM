@@ -6,19 +6,8 @@ library(RODBC)
 library(reshape)
 library(tidyr)
 
-dsn <- "DRIVER={SQL Server};
-UID=sa;
-pwd=ca!g736k;
-DATABASE=United;
-SERVER=104.130.31.161;"
-ch <- odbcDriverConnect(connection = dsn)
+load('Master Tables.Rda')
 
-##Pull Master tables
-
-master_cc = data.table(sqlQuery(ch,"select CatClassID, CatClass,Category,Class, CatClassGroup, CatClassDesc, AvgOEC from MASTER_CatClass"))
-SupChainCC=data.table(read.csv('C:/Sri/ForecastandTargets/SupplyChainCatClasses.csv'))
-master_cc=merge(master_cc,SupChainCC[,.(CatClass=Cat.Class,Supply.Chain)],by='CatClass',all.x=TRUE)
-master_cc[,CatClassGroup:=Supply.Chain]
 master_cc[is.na(CatClassGroup),Active:='No']
 master_cc[!is.na(CatClassGroup),Active:='Yes']
 
@@ -29,20 +18,12 @@ master_cc[is.na(CatClassGroup) & AvgOEC>=6000 & AvgOEC<20000,CatClassGroup:='Met
 master_cc[is.na(CatClassGroup) & AvgOEC>=20000 & AvgOEC<60000,CatClassGroup:='Metro/Metro']
 master_cc[is.na(CatClassGroup) & AvgOEC>=60000,CatClassGroup:='District/Metro']
 
-master_loc=data.table(read.csv('C:/Sri/ForecastandTargets/Master Location 061518.csv',header=TRUE))
-master_loc=master_loc[,.(Location=Location_Code,LocationID=Location_Code,MetroID=METRO,DistrictID=paste0("R",REGION,"D",DISTRICT),RegionID=REGION,
-                         MetroName=METRO_DESCRIPTION,DistrictName=DISTRICT_DESC,RegionName=REGION_DESC)]
 
 ##FR District
 active_loc=master_loc[DistrictID=='R6D16']$Location
 
 ###Pull CM data from SQL database
-CM <- data.table(sqlQuery(ch, paste0("select LocationCode,ContractId, CategoryCode,
-                                     ClassCode,ProfitRuleLabelTxt,TrgObjRuleAmt
-                                     from [United].[dbo].[IMP_ContribMargin] where 
-                                     ReportingDate>='",Sys.Date()-365,"' AND
-                                     CategoryCode>=100 AND
-                                     LocationCode in (",paste0("'",active_loc,"'",collapse=","),")")))
+load('CMTable.Rda')
 
 ##Pull Contract Details from SQL database
 # ContractDetails <- data.table(sqlQuery(ch, paste0("select ContractId, Qty, CatClass
