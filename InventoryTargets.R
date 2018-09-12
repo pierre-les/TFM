@@ -16,6 +16,8 @@ library(xts)
 load('Master Tables.Rda')
 ch=''
 
+
+
 ##Create vectors of active cat-classes and locations
 active_Local=unique(master_loc[RegionID==6]$LocationID)
 active_Metro=unique(master_loc[RegionID==6]$MetroID)
