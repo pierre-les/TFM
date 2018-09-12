@@ -1,0 +1,117 @@
+# Pulls daily on rent data, and aggregates at district, metro, local levels,
+# and monthly, weekly, daily averages.
+
+rm(list=ls())
+list.of.packages <- c("data.table", "forecast", "RODBC", "strucchange", "lubridate")
+
+#
+library(data.table)
+library(tseries)
+
+library(lubridate)
+library(forecast)
+library(reshape2)
+library(RODBC)
+library(doParallel)
+library(strucchange)
+### ODBC Connection
+dsn <- "DRIVER={SQL Server};
+UID=sa;
+pwd=ca!g736k;
+DATABASE=United;
+SERVER=104.130.31.161;"
+channel <- odbcDriverConnect(connection = dsn)
+
+master_cc = data.table(sqlQuery(channel,"select CatClassID, CatClass,Category,Class, CatClassGroup, CatClassDesc, AvgOEC from MASTER_CatClass"))
+SupChainCC=data.table(read.csv('SupplyChainCatClasses.csv'))
+master_cc=merge(master_cc,SupChainCC[,.(CatClass=Cat.Class,Supply.Chain)],by='CatClass')
+master_cc[,CatClassGroup:=Supply.Chain]
+
+master_loc=data.table(read.csv('Master Location 061518.csv',header=TRUE))
+master_loc=master_loc[,.(Location=Location_Code,LocationID=Location_Code,MetroID=METRO,DistrictID=paste0("R",REGION,"D",DISTRICT),RegionID=REGION,
+                         MetroName=METRO_DESCRIPTION,DistrictName=DISTRICT_DESC,RegionName=REGION_DESC)]
+master_calendar = data.table(sqlQuery(channel,"select distinct fiscal_week_date as WeekStartDate, fiscal_week as Week, fiscal_month as Month, fiscal_year as Year from MASTER_Calendar"))
+master_calendar[,WeekStartDate:= as.Date(WeekStartDate)]
+#
+loc600=master_loc[RegionID==6]
+#
+###########################################################
+
+#Get District Forecast
+active_cc=master_cc[CatClassGroup!='Out Of Scope']$CatClass
+#active_cc='300-2000'
+active_loc=unique(loc600$Location)
+
+###Pull daily rentals table from SQL database
+rentals_Daily<- data.table(sqlQuery(channel,paste0("select CatClass,Location,DayDate,TotalRentals,OwnedInventory from  DATA_RentalDetailByDay
+                                                   WHERE (TotalRentals>0 OR OwnedInventory>0)
+                                                   AND Location IN  (",paste0("'",active_loc,"'",collapse=","),")
+                                                   AND CatClass IN (",paste0("'",active_cc,"'",collapse=","),
+                                                   ") AND DayDate >= '",Sys.Date()-1015,"'"),believeNRows=FALSE))
+
+rentals_Daily[,DayDate:=as.Date(as.character(DayDate))]
+
+###Cutoff Date to remove Bad Data
+rentals_Daily=rentals_Daily[DayDate<='2018-07-31']
+
+save(rentals_Daily,file=paste0('rentals_Daily',Sys.Date(),'.Rda'))
+save(rentals_Daily,file='rentals_Daily.Rda')
+
+
+###merge rentals data with master location
+rentals_Daily=merge(rentals_Daily[CatClass %in% active_cc],unique(master_loc[,.(Location,DistrictID,MetroID,LocationID)]),by='Location')
+rentals_Daily[is.na(TotalRentals),'TotalRentals']=0
+rentals_Daily[is.na(OwnedInventory),'OwnedInventory']=0
+
+##create MonthStartDate and WeekStartDate columns
+rentals_Daily[,MonthStartDate:=floor_date(DayDate,unit='month')]
+rentals_Daily[,WeekStartDate:=floor_date(DayDate,unit='week',week_start = 1)]
+rentals_Daily[,CC_Loc:=paste(CatClass, LocationID, sep = "_")]
+
+###Create calendar table containing all Days, MonthStartDate and WeekStartDate
+###Merge with rentals_Daily to fill 0 rental days in order to compute averages
+calendar=unique(rentals_Daily[,.(DayDate)])
+cc_loc = unique(rentals_Daily[,CC_Loc])
+calendar=data.table(CC_Loc=rep(cc_loc,each=nrow(calendar)),DayDate=calendar$DayDate)
+calendar[,CatClass:=substr(CC_Loc,1,8)]
+calendar[,LocationID:=substr(CC_Loc,10,nchar(CC_Loc))]
+calendar[,MonthStartDate:=floor_date(DayDate,unit='month')]
+calendar[,WeekStartDate:=floor_date(DayDate,unit='week',week_start = 1)]
+calendar=merge(calendar,master_loc[,.(LocationID,MetroID,DistrictID)],by='LocationID')
+
+rentals_Daily=merge(rentals_Daily,calendar,all=TRUE,by=c('CatClass','LocationID','MetroID','DistrictID','CC_Loc','DayDate','MonthStartDate','WeekStartDate'))
+rentals_Daily[is.na(TotalRentals),TotalRentals:=0]
+rentals_Daily[is.na(OwnedInventory),OwnedInventory:=0]
+
+remove(calendar)
+
+###Output Local data
+rentals_Local_Daily=rentals_Daily[,.(CatClass,LocationID,DayDate,TotalRentals)]
+rentals_Local_Monthly=rentals_Daily[,.(TotalRentals=mean(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,LocationID,MonthStartDate)]
+rentals_Local_Weekly=rentals_Daily[,.(TotalRentals=mean(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,LocationID,WeekStartDate)]
+
+save(rentals_Local_Monthly,file='rentals_Local_Monthly.Rda')
+save(rentals_Local_Weekly,file='rentals_Local_Weekly.Rda')
+save(rentals_Local_Daily,file='rentals_Local_Daily.Rda')
+
+##Aggregate Metro data and output
+rentals_Metro=rentals_Daily[,.(TotalRentals=sum(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,MetroID,MonthStartDate,WeekStartDate,DayDate)]
+rentals_Metro_Daily=rentals_Metro[,.(TotalRentals=sum(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,MetroID,DayDate)]
+rentals_Metro_Monthly=rentals_Metro[,.(TotalRentals=mean(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,MetroID,MonthStartDate)]
+rentals_Metro_Weekly=rentals_Metro[,.(TotalRentals=mean(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,MetroID,WeekStartDate)]
+
+save(rentals_Metro_Monthly,file='rentals_Metro_Monthly.Rda')
+save(rentals_Metro_Weekly,file='rentals_Metro_Weekly.Rda')
+save(rentals_Metro_Daily,file='rentals_Metro_Daily.Rda')
+
+##Aggregate District data and output
+rentals_District=rentals_Daily[,.(TotalRentals=sum(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,DistrictID,MonthStartDate,WeekStartDate,DayDate)]
+rentals_District_Daily=rentals_District[,.(TotalRentals=sum(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,DistrictID,DayDate)]
+rentals_District_Monthly=rentals_District[,.(TotalRentals=mean(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,DistrictID,MonthStartDate)]
+rentals_District_Weekly=rentals_District[,.(TotalRentals=mean(TotalRentals),OwnedInventory=sum(OwnedInventory)),by=.(CatClass,DistrictID,WeekStartDate)]
+
+save(rentals_District_Monthly,file='rentals_District_Monthly.Rda')
+save(rentals_District_Weekly,file='rentals_District_Weekly.Rda')
+save(rentals_District_Daily,file='rentals_District_Daily.Rda')
+
+

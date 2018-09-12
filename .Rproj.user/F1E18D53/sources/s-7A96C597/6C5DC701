@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536300569351.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "6C5DC701",
+    "lastKnownWriteTime" : 1536328982,
+    "last_content_update" : 1536328982324,
+    "path" : "~/Barkawi/United Rentals/TFM Git/bestfit_20180506_UR.R",
+    "project_path" : "bestfit_20180506_UR.R",
+    "properties" : {
+        "cursorPosition" : "23,9",
+        "scrollLine" : "14"
+    },
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

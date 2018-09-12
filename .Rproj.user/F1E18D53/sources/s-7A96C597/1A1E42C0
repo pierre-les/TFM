@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536250625085.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1A1E42C0",
+    "lastKnownWriteTime" : 1536767532,
+    "last_content_update" : 1536767532194,
+    "path" : "~/Barkawi/United Rentals/TFM Git/Forecast_UR_Monthly.R",
+    "project_path" : "Forecast_UR_Monthly.R",
+    "properties" : {
+        "cursorPosition" : "19,0",
+        "scrollLine" : "4"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

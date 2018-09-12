@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536275526378.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3819188445",
+    "id" : "8BF61639",
+    "lastKnownWriteTime" : 1536768990,
+    "last_content_update" : 1536768990931,
+    "path" : "~/Barkawi/United Rentals/TFM Git/FcstSOPTable.R",
+    "project_path" : "FcstSOPTable.R",
+    "properties" : {
+        "cursorPosition" : "17,5",
+        "scrollLine" : "12"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

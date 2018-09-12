@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536256821934.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "3D349FC0",
+    "lastKnownWriteTime" : 1536768845,
+    "last_content_update" : 1536768959951,
+    "path" : "~/Barkawi/United Rentals/TFM Git/InventoryTargets.R",
+    "project_path" : "InventoryTargets.R",
+    "properties" : {
+        "cursorPosition" : "15,0",
+        "scrollLine" : "8"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

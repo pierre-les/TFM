@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536250273446.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "B698B939",
+    "lastKnownWriteTime" : 1536767357,
+    "last_content_update" : 1536767357182,
+    "path" : "~/Barkawi/United Rentals/TFM Git/Backcast_UR_Monthly.R",
+    "project_path" : "Backcast_UR_Monthly.R",
+    "properties" : {
+        "cursorPosition" : "23,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

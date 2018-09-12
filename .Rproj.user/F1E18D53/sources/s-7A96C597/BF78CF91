@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536251784278.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "BF78CF91",
+    "lastKnownWriteTime" : 1536768758,
+    "last_content_update" : 1536768758837,
+    "path" : "~/Barkawi/United Rentals/TFM Git/FillRates.R",
+    "project_path" : "FillRates.R",
+    "properties" : {
+        "cursorPosition" : "12,59",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

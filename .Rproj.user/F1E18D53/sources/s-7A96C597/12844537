@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536250393657.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "12844537",
+    "lastKnownWriteTime" : 1536767428,
+    "last_content_update" : 1536767428076,
+    "path" : "~/Barkawi/United Rentals/TFM Git/ForecastAccuracyEnsemble.R",
+    "project_path" : "ForecastAccuracyEnsemble.R",
+    "properties" : {
+        "cursorPosition" : "17,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

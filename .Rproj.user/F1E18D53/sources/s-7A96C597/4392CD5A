@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536279227849.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3261677830",
+    "id" : "4392CD5A",
+    "lastKnownWriteTime" : 1536769024,
+    "last_content_update" : 1536769024576,
+    "path" : "~/Barkawi/United Rentals/TFM Git/TransfersOutputSOP.R",
+    "project_path" : "TransfersOutputSOP.R",
+    "properties" : {
+        "cursorPosition" : "18,5",
+        "scrollLine" : "6"
+    },
+    "relative_order" : 10,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
