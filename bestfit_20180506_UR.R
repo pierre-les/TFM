@@ -287,7 +287,7 @@ bestfit = function(x, test_periods = 12, lead_time = 1:4,minObs=3,stepSize=1,max
         ##else add seasonal component to theta forecast
         xreg=xreg[(length(xreg)+1-frequency(x)):(length(xreg))]
         if (h>frequency(x)) xreg=rep(xreg,ceiling(h/frequency(x)))[1:h]
-        forecTheta::stheta(x, h)$mean+xreg
+        forecTheta::stheta(x, h)$mean+xreg[1:h]
         }
         
   
@@ -669,7 +669,7 @@ bestfit = function(x, test_periods = 12, lead_time = 1:4,minObs=3,stepSize=1,max
     }
     }
     
-    ###forecast using external data xreg is algorithm used is either 'arimaDec', 'glmnetDec' or 'thetaDec;
+    ###forecast using external data xreg is algorithm used is either 'arimaDec', 'glmnetDec' or 'thetaDec'
     
     if (!FUN %in% c('arimaDecForecast','glmnetDecForecast','thetaDecForecast')){
       FUN=get(FUN)
